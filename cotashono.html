@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>cotashono of moments inc / MUSIC2</title>
+	<style>
+	body {
+		margin: 0;
+		overflow-x: hidden;
+		background: #000;
+		color: #fff;
+		font-family: Arial, sans-serif;
+		height: 100vh;
+	}
+
+	#jumping-text {
+		position: fixed;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		font-size: 2.5rem;
+		white-space: nowrap;
+		text-shadow: 0 0 10px #0f0;
+		z-index: 100;
+	}
+
+	.moving-image {
+		position: absolute;
+		width: 150px;
+		height: auto;
+		cursor: pointer;
+		transition: transform 0.1s;
+	}
+
+	.moving-image:hover {
+		transform: scale(1.1);
+	}
+
+	.puzzle-container {
+		position: absolute;
+		width: 150px;
+		height: 150px;
+		z-index: 10;
+	}
+
+	@media (max-width: 768px) {
+		.moving-image {
+			width: 100px;
+		}
+
+		#jumping-text {
+			font-size: 1.5rem;
+		}
+	}
+	</style>
+</head>
+
+<body>
+	<div id="jumping-text">COTASHONO OF MOMENTS INC / MUSIC2</div>
+	<div id="moving-images-container"></div>
+	<div id="puzzle1" class="puzzle-container"></div>
+	<div id="puzzle2" class="puzzle-container"></div>
+	<div id="puzzle3" class="puzzle-container"></div>
+	<script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+	<script>
+	function createPuzzle(containerId) {
+		const container = document.getElementById(containerId);
+		const width = container.clientWidth;
+		const height = container.clientHeight;
+		const scene = new THREE.Scene();
+		const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+		const renderer = new THREE.WebGLRenderer({
+			alpha: true
+		});
+		renderer.setSize(width, height);
+		container.appendChild(renderer.domElement);
+		const puzzleShape = new THREE.Shape();
+		const size = 1;
+		const tabSize = 0.3;
+		puzzleShape.moveTo(-size / 2, -size / 2);
+		puzzleShape.lineTo(size / 2, -size / 2);
+		puzzleShape.lineTo(size / 2, -size / 2 + tabSize);
+		puzzleShape.lineTo(size / 2 - tabSize, -size / 2 + tabSize);
+		puzzleShape.lineTo(size / 2 - tabSize, size / 2 - tabSize);
+		puzzleShape.lineTo(size / 2, size / 2 - tabSize);
+		puzzleShape.lineTo(size / 2, size / 2);
+		puzzleShape.lineTo(size / 2 - tabSize, size / 2);
+		puzzleShape.lineTo(size / 2 - tabSize, size / 2 - tabSize);
+		puzzleShape.lineTo(-size / 2 + tabSize, size / 2 - tabSize);
+		puzzleShape.lineTo(-size / 2 + tabSize, size / 2);
+		puzzleShape.lineTo(-size / 2, size / 2);
+		puzzleShape.lineTo(-size / 2, size / 2 - tabSize);
+		puzzleShape.lineTo(-size / 2 + tabSize, size / 2 - tabSize);
+		puzzleShape.lineTo(-size / 2 + tabSize, -size / 2 + tabSize);
+		puzzleShape.lineTo(-size / 2, -size / 2 + tabSize);
+		puzzleShape.lineTo(-size / 2, -size / 2);
+		const extrudeSettings = {
+			depth: 0.2,
+			bevelEnabled: false
+		};
+		const geometry = new THREE.ExtrudeGeometry(puzzleShape, extrudeSettings);
+		const material = new THREE.MeshPhongMaterial({
+			color: 0x00FF00,
+			emissive: 0x003300,
+			specular: 0xFFFFFF,
+			shininess: 30
+		});
+		const puzzle = new THREE.Mesh(geometry, material);
+		scene.add(puzzle);
+		const light1 = new THREE.DirectionalLight(0xFFFFFF, 1);
+		light1.position.set(1, 1, 1);
+		scene.add(light1);
+		const light2 = new THREE.AmbientLight(0x404040);
+		scene.add(light2);
+		camera.position.z = 3;
+
+		function animate() {
+			requestAnimationFrame(animate);
+			puzzle.rotation.x += 0.005;
+			puzzle.rotation.y += 0.01;
+			renderer.render(scene, camera);
+		}
+		animate();
+		window.addEventListener('resize', () => {
+			const newWidth = container.clientWidth;
+			const newHeight = container.clientHeight;
+			camera.aspect = newWidth / newHeight;
+			camera.updateProjectionMatrix();
+			renderer.setSize(newWidth, newHeight);
+		});
+	}
+	const jumpingText = document.getElementById('jumping-text');
+	let posX = 0,
+		posY = 0;
+	let speedX = 2,
+		speedY = 2;
+
+	function updateJumpingText() {
+		const maxX = window.innerWidth - jumpingText.offsetWidth;
+		const maxY = window.innerHeight - jumpingText.offsetHeight;
+		posX += speedX;
+		posY += speedY;
+		if(posX >= maxX || posX <= 0) {
+			speedX *= -1;
+			jumpingText.style.textShadow = `0 0 10px rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`;
+		}
+		if(posY >= maxY || posY <= 0) {
+			speedY *= -1;
+			jumpingText.style.textShadow = `0 0 10px rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`;
+		}
+		jumpingText.style.left = `${posX}px`;
+		jumpingText.style.top = `${posY}px`;
+		requestAnimationFrame(updateJumpingText);
+	}
+	const images = [{
+		url: "https://band.link/MUSIC2020",
+		img: "/assets/MUSIC2020.jpg"
+	}, {
+		url: "https://music2kz.bandcamp.com/album/kazakhstan-ambient-baikonur-field-recordings-music2009",
+		img: "/assets/MUSIC2009.jpg"
+	}, {
+		url: "https://band.link/MUSIC2010",
+		img: "/assets/MUSIC2010.jpg"
+	}, {
+		url: "https://band.link/MUSIC2022",
+		img: "/assets/MUSIC2022.jpg"
+	}, {
+		url: "https://band.link/cotashono_x_dsff",
+		img: "/assets/MUSIC2026.jpg"
+	}, {
+		url: "https://band.link/MUSIC2039",
+		img: "/assets/MUSIC2039.jpg"
+	}, {
+		url: "#",
+		img: "/assets/cotashono.png"
+	}, {
+		url: "https://music2kz.bandcamp.com/album/looptape-24-moment00",
+		img: "/assets/MOMENT00.jpg"
+	}];
+	const movingImages = [];
+	const container = document.getElementById('moving-images-container');
+	images.forEach((item, index) => {
+		const link = document.createElement('a');
+		link.href = item.url;
+		link.target = "_blank";
+		link.classList.add('moving-image');
+		link.style.left = `${Math.random() * 80 + 10}%`;
+		link.style.top = `${Math.random() * 80 + 10}%`;
+		link.style.position = 'absolute';
+		const img = document.createElement('img');
+		img.src = item.img;
+		img.style.width = '100%';
+		img.style.height = 'auto';
+		link.appendChild(img);
+		container.appendChild(link);
+		const speedX = (Math.random() - 0.5) * 2;
+		const speedY = (Math.random() - 0.5) * 2;
+		const movingItem = {
+			element: link,
+			speedX: speedX,
+			speedY: speedY,
+			originalSpeedX: speedX,
+			originalSpeedY: speedY
+		};
+		link.addEventListener('mouseover', () => {
+			movingItem.speedX = 0;
+			movingItem.speedY = 0;
+		});
+		link.addEventListener('mouseout', () => {
+			movingItem.speedX = movingItem.originalSpeedX;
+			movingItem.speedY = movingItem.originalSpeedY;
+		});
+		movingImages.push(movingItem);
+	});
+
+	function moveImages() {
+		movingImages.forEach(img => {
+			let newX = parseFloat(img.element.style.left) + img.speedX;
+			let newY = parseFloat(img.element.style.top) + img.speedY;
+			if(newX <= 0 || newX >= 90) img.speedX *= -1;
+			if(newY <= 0 || newY >= 90) img.speedY *= -1;
+			img.element.style.left = `${newX}%`;
+			img.element.style.top = `${newY}%`;
+		});
+		requestAnimationFrame(moveImages);
+	}
+	document.addEventListener('DOMContentLoaded', () => {
+		['puzzle1', 'puzzle2', 'puzzle3'].forEach(id => {
+			const puzzle = document.getElementById(id);
+			puzzle.style.top = Math.random() * 90 + '%';
+			puzzle.style.left = Math.random() * 90 + '%';
+			createPuzzle(id);
+		});
+		updateJumpingText();
+		moveImages();
+	});
+	</script>
+</body>
+
+</html>
